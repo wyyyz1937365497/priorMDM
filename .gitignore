@@ -1,17 +1,21 @@
-# Byte-compiled / optimized / DLL files
+﻿# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+/inv_transform.data
 # C extensions
 *.so
-
-
-
+/body_models
+/save
+/dataset
+/body_models
+/.vs
+/glove
 # Distribution / packaging
 .Python
 build/
 develop-eggs/
+output/
 dist/
 downloads/
 eggs/

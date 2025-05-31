@@ -26,19 +26,9 @@ class doubleTake_MDM(MDM):
         self.cond_mode = kargs.get('cond_mode', 'no_cond')
         self.cond_mask_prob = kargs.get('cond_mask_prob', 0.)  # mask all to remove condition
         trans_emb_dim = 0
-        if self.trans_emb:
-            print("Using TransEmb!")
-            trans_emb_dim = 4
-            self.emb_trans_or_not = nn.Embedding(2, trans_emb_dim)
 
         self.input_process = InputProcess(self.data_rep, (self.input_feats + trans_emb_dim)
                                                 if self.trans_emb else self.input_feats, self.latent_dim)
-        # self.sequence_pos_encoder = PositionalEncoding(self.latent_dim, self.dropout, use_tta=self.use_tta,
-        #                                                     max_len=5000)
-        #
-        # self.t_pos_encoder = PositionalEncoding(self.latent_dim, self.dropout, use_tta=False, max_len=5000)
-        # self.embed_timestep = self.TimestepEmbedder(self.latent_dim, self.t_pos_encoder if self.use_tta else
-        #                                             self.sequence_pos_encoder)
 
         if self.cond_mode != 'no_cond':
             if 'action' in self.cond_mode:

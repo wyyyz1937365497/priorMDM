@@ -59,15 +59,18 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3
 
 def explicit_plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3, 3), fps=120, radius=3, vis_mode="default", frame_colors=[], joints2=None, painting_features=[]):
     """
-    outputs the 3D motion to an mp4 file
+    outputs the 3D mo
+    tion to an mp4 file
     """
     matplotlib.use("Agg")
 
+    # 如果title是字符串，则将其转换为列表，每行20个字符
     if type(title) == str:
         title = ["\n".join(wrap(title, 20))]
     elif type(title) == list:
         title = ["\n".join(wrap(t, 20)) for t in title]
 
+    # 初始化函数，设置3D坐标轴范围和标题
     def init():
         ax.set_xlim3d([-radius / 2, radius / 2])
         ax.set_ylim3d([0, radius])
@@ -76,6 +79,7 @@ def explicit_plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, f
         fig.suptitle(title[0], fontsize=10)
         ax.grid(b=False)
 
+    # 绘制XZ平面
     def plot_xzPlane(minx, maxx, miny, minz, maxz):
         ## Plot a plane XZ
         verts = [[minx, miny, minz], [minx, miny, maxz], [maxx, miny, maxz], [maxx, miny, minz]]
@@ -177,8 +181,11 @@ def explicit_plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, f
         
         def plot_feature(feature):
             # trajectory = Line3DCollection(joints[:,0])
+            # 判断feature是否在humanml_utils.HML_JOINT_NAMES中
             if feature in humanml_utils.HML_JOINT_NAMES:
+                # 获取feature在humanml_utils.HML_JOINT_NAMES中的索引
                 feat_index = humanml_utils.HML_JOINT_NAMES.index(feature)
+                # 绘制3D曲线，其中x轴为data[:index+1, feat_index, 0] + (trajec[:index+1, 0] - trajec[index, 0])，y轴为data[:index+1, feat_index, 1]，z轴为data[:index+1, feat_index, 2] + (trajec[:index+1, 2] - trajec[index, 2])，线宽为2.0，颜色为used_colors[0]
                 ax.plot3D(data[:index+1, feat_index, 0] + (trajec[:index+1, 0] - trajec[index, 0]),
                           data[:index+1, feat_index, 1],
                           data[:index+1, feat_index, 2] + (trajec[:index+1, 2] - trajec[index, 2]), linewidth=2.0,
@@ -197,7 +204,6 @@ def explicit_plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, f
         ax.set_zticklabels([])
 
     ani = FuncAnimation(fig, update, frames=frame_number, interval=1000 // fps, repeat=False)
-
     ani.save(save_path, fps=fps)
 
     plt.close()

@@ -659,9 +659,13 @@ class GaussianDiffusion:
         :param const_noise: If True, will noise all samples with the same noise throughout sampling
         :return: a non-differentiable batch of samples.
         """
-        final = None
+        final = None  # 初始化最终样本为None
         if dump_steps is not None:
-            dump = []
+            dump = []  # 初始化存储特定步骤样本的列表
+
+        if 'text' in model_kwargs['y'].keys():
+            # encoding once instead of each iteration saves lots of time
+            model_kwargs['y']['text_embed'] = model.encode_text(model_kwargs['y']['text'])  # 对文本进行编码
 
         for i, sample in enumerate(self.p_sample_loop_progressive(
             model,
@@ -683,29 +687,29 @@ class GaussianDiffusion:
 
             # unfolding
             if ((arb_len) and (unfolding_handshake > 0) and not (second_take_only)):
-                alpha = torch.arange(0, unfolding_handshake, 1, device=sample['sample'].device) / unfolding_handshake
+                alpha = torch.arange(0, unfolding_handshake, 1, device=sample['sample'].device) / unfolding_handshake  # 计算alpha值
                 for sample_i, len in zip(range(1, sample['sample'].shape[0]), model_kwargs['y']['lengths']):
-                    _suffix = sample['sample'][sample_i - 1, :, :, -unfolding_handshake + len:len]
-                    _prefix = sample['sample'][sample_i, :, :, :unfolding_handshake]
+                    _suffix = sample['sample'][sample_i - 1, :, :, -unfolding_handshake + len:len]  # 获取前一个样本的后缀
+                    _prefix = sample['sample'][sample_i, :, :, :unfolding_handshake]  # 获取当前样本的前缀
                     try:
-                        _blend = (_suffix * (1 - alpha) + _prefix * alpha)
+                        _blend = (_suffix * (1 - alpha) + _prefix * alpha)  # 计算混合样本
                     except(RuntimeError):
-                        print("Error")
-                    sample['sample'][sample_i - 1, :, :, -unfolding_handshake + len:len] = _blend
-                    sample['sample'][sample_i, :, :, :unfolding_handshake] = _blend
+                        print("Error")  # 捕获并打印错误
+                    sample['sample'][sample_i - 1, :, :, -unfolding_handshake + len:len] = _blend  # 更新前一个样本的后缀
+                    sample['sample'][sample_i, :, :, :unfolding_handshake] = _blend  # 更新当前样本的前缀
             elif ((unfolding_handshake > 0) and not (second_take_only)):
                 for sample_i in range(1, sample['sample'].shape[0]):
-                    _suffix = sample['sample'][sample_i - 1, :, :, -unfolding_handshake:]
-                    _prefix = sample['sample'][sample_i, :, :, :unfolding_handshake]
-                    _blend = (_suffix * (1 - alpha) + _prefix * alpha)
-                    sample['sample'][sample_i - 1, :, :, -unfolding_handshake:] = _blend
-                    sample['sample'][sample_i, :, :, :unfolding_handshake] = _blend
+                    _suffix = sample['sample'][sample_i - 1, :, :, -unfolding_handshake:]  # 获取前一个样本的后缀
+                    _prefix = sample['sample'][sample_i, :, :, :unfolding_handshake]  # 获取当前样本的前缀
+                    _blend = (_suffix * (1 - alpha) + _prefix * alpha)  # 计算混合样本
+                    sample['sample'][sample_i - 1, :, :, -unfolding_handshake:] = _blend  # 更新前一个样本的后缀
+                    sample['sample'][sample_i, :, :, :unfolding_handshake] = _blend  # 更新当前样本的前缀
             if dump_steps is not None and i in dump_steps:
-                dump.append(deepcopy(sample["sample"]))
-            final = sample
+                dump.append(deepcopy(sample["sample"]))  # 存储特定步骤的样本
+            final = sample  # 更新最终样本
         if dump_steps is not None:
-            return dump
-        return final["sample"]
+            return dump  # 如果指定了dump_steps，返回存储的样本
+        return final["sample"]  # 返回最终样本
 
     def p_sample_loop_progressive(
         self,
@@ -739,23 +743,25 @@ class GaussianDiffusion:
         if noise is not None:
             img = noise
         else:
-            if predict_two_person:
-                img = [th.randn(*shape, device=device), th.randn(*shape, device=device)]
-            else:
-                img = th.randn(*shape, device=device)
+            # if predict_two_person:
+            #     img = [th.randn(*shape, device=device), th.randn(*shape, device=device)]
+            # else:
+                # img = th.randn(*shape, device=device)
+            img = th.randn(*shape, device=device)
 
         if skip_timesteps and init_image is None:
             init_image = th.zeros_like(img)
 
         indices = list(range(self.num_timesteps - skip_timesteps))[::-1]
-
+        print(indices)
         if init_image is not None:
+            indices=[29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
             my_t = th.ones([shape[0]], device=device, dtype=th.long) * indices[0]
-            if predict_two_person:
-                img[0] = self.q_sample(init_image[0].to(device), my_t, img[0], model_kwargs=model_kwargs)
-                img[1] = self.q_sample(init_image[1].to(device), my_t, img[1], model_kwargs=model_kwargs)
-            else:
-                img = self.q_sample(init_image, my_t, img, model_kwargs=model_kwargs)
+            # if predict_two_person:
+            #     img[0] = self.q_sample(init_image[0].to(device), my_t, img[0], model_kwargs=model_kwargs)
+            #     img[1] = self.q_sample(init_image[1].to(device), my_t, img[1], model_kwargs=model_kwargs)
+            # else:
+            img = self.q_sample(init_image, my_t, img, model_kwargs=model_kwargs)
 
         if progress:
             # Lazy import so that we don't depend on tqdm.
@@ -771,8 +777,8 @@ class GaussianDiffusion:
                                                device=model_kwargs['y'].device)
             with th.no_grad():
                 sample_fn = self.p_sample_with_grad if cond_fn_with_grad else self.p_sample
-                if predict_two_person:
-                    sample_fn = self.p_sample_multi
+                # if predict_two_person:
+                #     sample_fn = self.p_sample_multi
                 out = sample_fn(
                     model,
                     img,

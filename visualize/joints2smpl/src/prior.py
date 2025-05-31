@@ -115,14 +115,14 @@ class MaxMixturePrior(nn.Module):
         self.num_gaussians = num_gaussians
         self.epsilon = epsilon
         self.use_merged = use_merged
-        gmm_fn = 'gmm_{:02d}.pkl'.format(num_gaussians)
+        gmm_fn = 'dos_gmm_{:02d}.pkl'.format(num_gaussians)
 
         full_gmm_fn = os.path.join(prior_folder, gmm_fn)
         if not os.path.exists(full_gmm_fn):
             print('The path to the mixture prior "{}"'.format(full_gmm_fn) +
                   ' does not exist, exiting!')
             sys.exit(-1)
-
+        print('Loading the mixture prior from "{}"'.format(full_gmm_fn))
         with open(full_gmm_fn, 'rb') as f:
             gmm = pickle.load(f, encoding='latin1')
 

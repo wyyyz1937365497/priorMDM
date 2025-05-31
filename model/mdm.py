@@ -86,9 +86,6 @@ class MDM(nn.Module):
                 print('Loading CLIP...')
                 self.clip_version = clip_version
                 self.clip_model = self.load_and_freeze_clip(clip_version)
-            if 'action' in self.cond_mode:
-                self.embed_action = EmbedAction(self.num_actions, self.latent_dim)
-                print('EMBED ACTION')
 
         self.output_process = OutputProcess(self.data_rep, self.input_feats, self.latent_dim, self.njoints,
                                             self.nfeats)

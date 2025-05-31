@@ -51,11 +51,6 @@ class UnconditionedModel(nn.Module):
     def parameters(self):
         return self.model.parameters()
 
-def wrap_model(model, args):
-    if args.guidance_param not in [0., 1.]:
-        return ClassifierFreeSampleModel(model)   # wrapping model with the classifier-free sampler
-    elif args.guidance_param == 0:
-        return UnconditionedModel(model)
-    else:
-        return model
+def wrap_model(model):
+    return ClassifierFreeSampleModel(model)   # wrapping model with the classifier-free sampler
     

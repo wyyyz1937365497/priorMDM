@@ -1,0 +1,5 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "Codegeex.RepoIndex": true,
+    "Codegeex.CommitMessageStyle": "Default"
+}
