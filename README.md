@@ -1,4 +1,4 @@
-# PriorMDM: Human Motion Diffusion as a Generative Prior [ICLR 2024]
+﻿# PriorMDM: Human Motion Diffusion as a Generative Prior [ICLR 2024]
 
 
 [![arXiv](https://img.shields.io/badge/arXiv-<2303.01418>-<COLOR>.svg)](https://arxiv.org/abs/2303.01418)
@@ -31,6 +31,7 @@ If you find this code useful in your research, please cite:
 | **Fine-tuned motion control** | ✅ | ✅ | ✅ |
 
 ## News
+经过wyyyz的改进适配了50推理的权重，解除了对于humanl3d数据集的依赖
 
 📢 **29/Apr/2023** - Evaluation release of the long-motions scripts, including both datasets (BABEL & HumanML3D) - please check the updated readme.
 
