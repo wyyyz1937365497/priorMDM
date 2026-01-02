@@ -31,16 +31,10 @@ kiwisolver==1.4.4
 langcodes==3.3.0
 lxml
 markupsafe==2.1.1
-matplotlib==3.3.4
 more-itertools==9.0.0
 murmurhash==1.0.9
 networkx==3.1
 numpy==1.23
-nvidia-cublas-cu11==11.10.3.66
-nvidia-cuda-nvrtc-cu11==11.7.99
-nvidia-cuda-runtime-cu11==11.7.99
-nvidia-cudnn-cu11==8.9.4.25
-nvidia-htop==1.0.5
 orderedmultidict==1.0.1
 packaging==21.3
 pandas==1.5.0
@@ -76,7 +70,7 @@ tenacity==8.1.0
 termcolor==2.1.1
 thinc==8.1.5
 tokenizers==0.13.2
-torch==2.3.0
+torch
 torchvision
 tqdm==4.64.1
 transformers==4.25.1

@@ -57,7 +57,6 @@ def main(texts:list=Body(...)):
     handshake_size=20
     blend_len=10
     sample_gt=False
-    prepare_diffusion()
     # 设置样本数量
     num_samples = len(texts)
     print(f"num_samples: {num_samples}")
